@@ -3,6 +3,9 @@ package com.example.shop.controller;
 import com.example.shop.model.Cart;
 import com.example.shop.model.Product;
 import com.example.shop.service.ProductService;
+import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -25,30 +28,36 @@ public class CartController {
     private final ProductService productService;
 
     @ModelAttribute("cart")
-    public Cart getCart() {
-        return new Cart();
+    public Cart getCart(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        Cart cart = (Cart) session.getAttribute("cart");
+        if (cart == null) {
+            cart = new Cart();
+            session.setAttribute("cart", cart);
+        }
+        return cart;
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Cart> addItemToCart(@RequestParam String productId, @RequestParam int quantity, @ModelAttribute("cart") Cart cart) {
+    public ResponseEntity<Cart> addItemToCart(@RequestParam String productId, @RequestParam int quantity, @Parameter(hidden = true) @ModelAttribute("cart") Cart cart) {
         Product product = productService.getProduct(productId);
         cart.addItem(product, quantity);
         return ResponseEntity.ok(cart);
     }
 
     @DeleteMapping("/remove")
-    public ResponseEntity<Cart> removeItemFromCart(@RequestParam String productId, @ModelAttribute("cart") Cart cart) {
+    public ResponseEntity<Cart> removeItemFromCart(@RequestParam String productId, @Parameter(hidden = true) @ModelAttribute("cart") Cart cart) {
         cart.removeItem(productId);
         return ResponseEntity.ok(cart);
     }
 
     @GetMapping
-    public ResponseEntity<Cart> viewCart(@ModelAttribute("cart") Cart cart) {
+    public ResponseEntity<Cart> viewCart(@Parameter(hidden = true) @ModelAttribute("cart") Cart cart) {
         return ResponseEntity.ok(cart);
     }
 
     @PostMapping("/clear")
-    public ResponseEntity<Cart> clearCart(@ModelAttribute("cart") Cart cart) {
+    public ResponseEntity<Cart> clearCart(@Parameter(hidden = true) @ModelAttribute("cart") Cart cart) {
         cart.clear();
         return ResponseEntity.ok(cart);
     }

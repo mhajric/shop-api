@@ -22,7 +22,7 @@ public class ProductController {
 
     private final ProductService productService;
 
-    @RequestMapping
+    @GetMapping
     public ResponseEntity<Page<ProductResponse>> getProducts(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         log.info("Get products page: {}, size: {}", page, size);
         final Page<Product> products = productService.getProducts(page, size);

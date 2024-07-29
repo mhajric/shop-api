@@ -9,6 +9,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -22,6 +24,13 @@ public class MongoConfig {
     public void init() {
         log.info("Initializing MongoDB...");
         mongoTemplate.createCollection("products");
-        mongoTemplate.insert(Product.builder().name("Product 1").price(BigDecimal.TEN).build());
+        Product product = Product.builder()
+                .name("Product 1")
+                .description("description")
+                .imageUrls(List.of("http://loclhost:8080/images/image1.jpg"))
+                .price(BigDecimal.TEN)
+                .attributes(Map.of("attrib", "value"))
+                .build();
+        mongoTemplate.insert(product);
     }
 }

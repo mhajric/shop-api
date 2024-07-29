@@ -1,2 +1,2 @@
 # shop-api
-BE for web-shop using Sbring
+BE for web-shop using Spring
